@@ -1,9 +1,10 @@
-![Landing Page](<https://raw.githubusercontent.com/Muhammad-X7/prayers-timings/main/public/Screenshot%20(87).png>)
-
-
 # Prayer Times App 🕌
 
 A modern and responsive **Prayer Times application** built with **React** and **MUI (Material-UI)** that provides accurate prayer timings for selected cities in **Saudi Arabia** and **Iraq**. The app supports both **Arabic and English languages** and offers a **light/dark mode** for user convenience.
+
+
+![Landing Page](<https://raw.githubusercontent.com/Muhammad-X7/prayers-timings/main/public/Screenshot%20(87).png>)
+
 
 ## Features ✨
 
