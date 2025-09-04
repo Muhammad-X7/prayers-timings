@@ -23,8 +23,8 @@ A modern and responsive **Prayer Times application** built with **React** and **
 
 ## Screenshots 📸
 
-![Landing Page](</prayers-timings/public/Screenshot%20(87).png>)
-![Landing Page](</prayers-timings/public/Screenshot%20(88).png>)
+![Landing Page](<https://raw.githubusercontent.com/Muhammad-X7/prayers-timings/main/public/Screenshot%20(87).png>)
+![Landing Page](<https://raw.githubusercontent.com/Muhammad-X7/prayers-timings/main/public/Screenshot%20(88).png>)
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
