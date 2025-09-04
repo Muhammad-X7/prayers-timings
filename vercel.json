@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "build": {
+    "env": {
+      "VITE_PUBLIC_URL": "/"
+    }
+  },
+  "outputDirectory": "dist"
+}
