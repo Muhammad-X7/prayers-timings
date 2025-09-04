@@ -164,36 +164,6 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		getTimings();
 	}, [getTimings]); // الآن ESLint سعيد
 
-
-	useEffect(() => {
-		let interval = setInterval(() => {
-			setupCountdownTimer();
-		}, 1000);
-
-		const now = new Date();
-		setToday(
-			now.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
-				weekday: "long",
-				year: "numeric",
-				month: "long",
-				day: "numeric",
-			}) +
-			" | " +
-			now.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
-				hour: "2-digit",
-				minute: "2-digit",
-			})
-		);
-
-		return () => clearInterval(interval);
-	}, [language, setupCountdownTimer]); // ESLint لا يعطي تحذير الآن
-
-	const timeToMinutes = (time) => {
-		const [hours, minutes] = time.split(':').map(Number);
-		return hours * 60 + minutes;
-	};
-
-
 	// فرضًا setupCountdownTimer موجودة هنا
 	const setupCountdownTimer = useCallback(() => {
 		const now = new Date();
@@ -232,6 +202,36 @@ export default function MainContent({ darkMode, setDarkMode }) {
 			`${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
 		);
 	}, [timings]); // تتغير فقط عند تغير timings
+
+
+	useEffect(() => {
+		let interval = setInterval(() => {
+			setupCountdownTimer();
+		}, 1000);
+
+		const now = new Date();
+		setToday(
+			now.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
+				weekday: "long",
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			}) +
+			" | " +
+			now.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
+				hour: "2-digit",
+				minute: "2-digit",
+			})
+		);
+
+		return () => clearInterval(interval);
+	}, [language, setupCountdownTimer]); // ESLint لا يعطي تحذير الآن
+
+	const timeToMinutes = (time) => {
+		const [hours, minutes] = time.split(':').map(Number);
+		return hours * 60 + minutes;
+	};
+
 
 	const handleCityChange = (event) => {
 		const [country, apiName] = event.target.value.split('-');
