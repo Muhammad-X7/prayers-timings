@@ -1,0 +1,67 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  /* Default colors - will be overridden by JavaScript */
+  --bg-color: #242424;
+  --text-color: rgba(255, 255, 255, 0.87);
+
+  color: var(--text-color);
+  background-color: var(--bg-color);
+
+  /* overflow-y: hidden; */
+  overflow-x: hidden;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* RTL Support */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Dark mode specific styles */
+.dark-mode {
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* Light mode specific styles */
+.light-mode {
+  background-color: #ffffff;
+  color: #242424;
+}
+
+/* MUI Select styles for dark mode */
+.MuiSelect-select {
+  color: inherit !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.23) !important;
+}
+
+.light-mode .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0, 0, 0, 0.23) !important;
+}
+
+.MuiSvgIcon-root {
+  color: inherit !important;
+}
