@@ -319,7 +319,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					<Prayer
 						name={prayersArray[0].displayName[language]}
 						time={timings.Fajr}
-						image="Fajr.png"
+						image="Fajr.webp"
 						darkMode={darkMode}
 					/>
 				</Grid>
@@ -327,7 +327,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					<Prayer
 						name={prayersArray[1].displayName[language]}
 						time={timings.Dhuhr}
-						image="Dhuhr.png"
+						image="Dhuhr.webp"
 						darkMode={darkMode}
 					/>
 				</Grid>
@@ -335,7 +335,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					<Prayer
 						name={prayersArray[2].displayName[language]}
 						time={timings.Asr}
-						image="Asr.png"
+						image="Asr.webp"
 						darkMode={darkMode}
 					/>
 				</Grid>
@@ -343,7 +343,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					<Prayer
 						name={prayersArray[3].displayName[language]}
 						time={timings.Sunset}
-						image="Sunset.png"
+						image="Sunset.webp"
 						darkMode={darkMode}
 					/>
 				</Grid>
@@ -351,7 +351,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					<Prayer
 						name={prayersArray[4].displayName[language]}
 						time={timings.Isha}
-						image="Isha.png"
+						image="Isha.webp"
 						darkMode={darkMode}
 					/>
 				</Grid>
