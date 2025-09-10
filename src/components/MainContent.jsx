@@ -321,6 +321,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						time={timings.Fajr}
 						image="Fajr.webp"
 						darkMode={darkMode}
+						loading="lazy"
 					/>
 				</Grid>
 				<Grid item xs={12} sm={4} lg={2.4}>
@@ -329,6 +330,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						time={timings.Dhuhr}
 						image="Dhuhr.webp"
 						darkMode={darkMode}
+						loading="lazy"
 					/>
 				</Grid>
 				<Grid item xs={12} sm={4} lg={2.4}>
@@ -337,6 +339,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						time={timings.Asr}
 						image="Asr.webp"
 						darkMode={darkMode}
+						loading="lazy"
 					/>
 				</Grid>
 				<Grid item xs={12} sm={4} lg={2.4}>
@@ -345,6 +348,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						time={timings.Sunset}
 						image="Sunset.webp"
 						darkMode={darkMode}
+						loading="lazy"
 					/>
 				</Grid>
 				<Grid item xs={12} sm={4} lg={2.4}>
@@ -353,6 +357,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						time={timings.Isha}
 						image="Isha.webp"
 						darkMode={darkMode}
+						loading="lazy"
 					/>
 				</Grid>
 			</Grid>
