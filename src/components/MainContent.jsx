@@ -7,7 +7,7 @@ import Prayer from "./Prayer";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { Button } from "@mui/material";
+import { Button, Alert, CircularProgress } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
 import { useState, useEffect, useCallback } from "react";
@@ -32,6 +32,8 @@ export default function MainContent({ darkMode, setDarkMode }) {
 	});
 
 	const [remainingTime, setRemainingTime] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
 
 	// تحميل اللغة المحفوظة أو الافتراضية
 	const [language, setLanguage] = useState(() => {
@@ -45,55 +47,73 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		return savedCity ? JSON.parse(savedCity) : {
 			displayName: { ar: "مكة المكرمة", en: "Makkah" },
 			apiName: "Makkah al Mukarramah",
-			country: "SA"
+			country: "SA",
+			lat: 21.4225,
+			lng: 39.8262
 		};
 	});
 
 	const [today, setToday] = useState("");
 
-	// Available cities with Arabic and English names
+	// Available cities with Arabic and English names + coordinates
 	const availableCities = [
 		// Saudi Arabia
 		{
 			displayName: { ar: "مكة المكرمة", en: "Makkah" },
 			apiName: "Makkah al Mukarramah",
-			country: "SA"
+			country: "SA",
+			lat: 21.4225,
+			lng: 39.8262
 		},
 		{
 			displayName: { ar: "الرياض", en: "Riyadh" },
 			apiName: "Riyadh",
-			country: "SA"
+			country: "SA",
+			lat: 24.7136,
+			lng: 46.6753
 		},
 		{
 			displayName: { ar: "جدة", en: "Jeddah" },
 			apiName: "Jeddah",
-			country: "SA"
+			country: "SA",
+			lat: 21.5433,
+			lng: 39.1728
 		},
 		{
 			displayName: { ar: "الدمام", en: "Dammam" },
 			apiName: "Dammam",
-			country: "SA"
+			country: "SA",
+			lat: 26.4207,
+			lng: 50.0888
 		},
 		// Iraq
 		{
 			displayName: { ar: "بغداد", en: "Baghdad" },
 			apiName: "Baghdad",
-			country: "IQ"
+			country: "IQ",
+			lat: 33.3152,
+			lng: 44.3661
 		},
 		{
 			displayName: { ar: "أربيل", en: "Erbil" },
 			apiName: "Erbil",
-			country: "IQ"
+			country: "IQ",
+			lat: 36.1911,
+			lng: 44.0092
 		},
 		{
 			displayName: { ar: "كركوك", en: "Kirkuk" },
 			apiName: "Kirkuk",
-			country: "IQ"
+			country: "IQ",
+			lat: 35.4681,
+			lng: 44.3922
 		},
 		{
 			displayName: { ar: "البصرة", en: "Basra" },
 			apiName: "Basra",
-			country: "IQ"
+			country: "IQ",
+			lat: 30.5085,
+			lng: 47.7835
 		}
 	];
 
@@ -115,7 +135,10 @@ export default function MainContent({ darkMode, setDarkMode }) {
 			iraq: "العراق",
 			language: "English",
 			darkMode: "الوضع النهاري",
-			lightMode: "الوضع الليلي"
+			lightMode: "الوضع الليلي",
+			loading: "جاري التحميل...",
+			errorLoading: "فشل تحميل الأوقات",
+			retry: "إعادة المحاولة"
 		},
 		en: {
 			title: "Prayer Times",
@@ -125,7 +148,10 @@ export default function MainContent({ darkMode, setDarkMode }) {
 			iraq: "Iraq",
 			language: "العربية",
 			darkMode: "Light Mode",
-			lightMode: "Dark Mode"
+			lightMode: "Dark Mode",
+			loading: "Loading...",
+			errorLoading: "Failed to load times",
+			retry: "Retry"
 		}
 	};
 
@@ -149,22 +175,45 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 
 
+	// استخدام Pray.zone API فقط - الأكثر موثوقية
 	const getTimings = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+
 		try {
 			const response = await axios.get(
-				`https://api.aladhan.com/v1/timingsByCity?country=${selectedCity.country}&city=${selectedCity.apiName}`
+				"https://api.aladhan.com/v1/timings",
+				{
+					params: {
+						latitude: selectedCity.lat,
+						longitude: selectedCity.lng,
+						method: 4 // Umm Al-Qura
+					}
+				}
 			);
-			setTimings(response.data.data.timings);
-		} catch (error) {
-			console.error("Error fetching prayer times:", error);
+
+			const times = response.data.data.timings;
+
+			setTimings({
+				Fajr: times.Fajr,
+				Dhuhr: times.Dhuhr,
+				Asr: times.Asr,
+				Sunset: times.Maghrib,
+				Isha: times.Isha
+			});
+
+		} catch (err) {
+			setError("فشل تحميل أوقات الصلاة");
+		} finally {
+			setLoading(false);
 		}
-	}, [selectedCity]); // فقط عندما يتغير selectedCity
+	}, [selectedCity]);
 
 	useEffect(() => {
 		getTimings();
-	}, [getTimings]); // الآن ESLint سعيد
+	}, [getTimings]);
 
-	// فرضًا setupCountdownTimer موجودة هنا
+	// دالة العد التنازلي للصلاة القادمة
 	const setupCountdownTimer = useCallback(() => {
 		const now = new Date();
 		const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -201,7 +250,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		setRemainingTime(
 			`${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
 		);
-	}, [timings]); // تتغير فقط عند تغير timings
+	}, [timings]);
 
 
 	useEffect(() => {
@@ -225,7 +274,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		);
 
 		return () => clearInterval(interval);
-	}, [language, setupCountdownTimer]); // ESLint لا يعطي تحذير الآن
+	}, [language, setupCountdownTimer]);
 
 	const timeToMinutes = (time) => {
 		const [hours, minutes] = time.split(':').map(Number);
@@ -259,12 +308,48 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 	return (
 		<div style={containerStyle}>
+			{/* رسالة خطأ مع زر إعادة المحاولة */}
+			{error && (
+				<Alert
+					severity="error"
+					style={{
+						marginBottom: "20px",
+						backgroundColor: darkMode ? "#5c2020" : "#f8d7da",
+						color: darkMode ? "#ff5252" : "#721c24"
+					}}
+					action={
+						<Button
+							color="inherit"
+							size="small"
+							onClick={getTimings}
+							disabled={loading}
+						>
+							{t("retry")}
+						</Button>
+					}
+				>
+					{t("errorLoading")}: {error}
+				</Alert>
+			)}
+
 			{/* TOP ROW */}
 			<Grid container spacing={2} alignItems="center">
 				{/* التاريخ */}
 				<Grid xs={12} sm={5}>
 					<h2>{today}</h2>
-					<h1>{selectedCity.displayName[language]}</h1>
+					<h1>
+						{selectedCity.displayName[language]}
+						{loading && (
+							<CircularProgress
+								size={20}
+								style={{
+									marginRight: language === "ar" ? "10px" : "0",
+									marginLeft: language === "en" ? "10px" : "0",
+									color: "#00b040ff"
+								}}
+							/>
+						)}
+					</h1>
 				</Grid>
 				<Grid xs={12} sm={5}>
 					<div>
@@ -301,7 +386,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 								color: darkMode ? "white" : "#242424",
 								borderColor: darkMode ? "white" : "#242424",
 								fontSize: "12px",
-								marginRigth: "10px",
+								marginRight: "10px",
 								padding: "8px 8px"
 							}}
 						>
@@ -315,49 +400,44 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 			{/* PRAYERS CARDS */}
 			<Grid container spacing={2} style={{ marginTop: "20px" }}>
-				<Grid item xs={12} sm={4} lg={2.4}>
+				<Grid xs={12} sm={6} md={4} lg={2.4}>
 					<Prayer
 						name={prayersArray[0].displayName[language]}
 						time={timings.Fajr}
 						image="Fajr.webp"
 						darkMode={darkMode}
-						loading="lazy"
 					/>
 				</Grid>
-				<Grid item xs={12} sm={4} lg={2.4}>
+				<Grid xs={12} sm={6} md={4} lg={2.4}>
 					<Prayer
 						name={prayersArray[1].displayName[language]}
 						time={timings.Dhuhr}
 						image="Dhuhr.webp"
 						darkMode={darkMode}
-						loading="lazy"
 					/>
 				</Grid>
-				<Grid item xs={12} sm={4} lg={2.4}>
+				<Grid xs={12} sm={6} md={4} lg={2.4}>
 					<Prayer
 						name={prayersArray[2].displayName[language]}
 						time={timings.Asr}
 						image="Asr.webp"
 						darkMode={darkMode}
-						loading="lazy"
 					/>
 				</Grid>
-				<Grid item xs={12} sm={4} lg={2.4}>
+				<Grid xs={12} sm={6} md={4} lg={2.4}>
 					<Prayer
 						name={prayersArray[3].displayName[language]}
 						time={timings.Sunset}
 						image="Sunset.webp"
 						darkMode={darkMode}
-						loading="lazy"
 					/>
 				</Grid>
-				<Grid item xs={12} sm={4} lg={2.4}>
+				<Grid xs={12} sm={6} md={4} lg={2.4}>
 					<Prayer
 						name={prayersArray[4].displayName[language]}
 						time={timings.Isha}
 						image="Isha.webp"
 						darkMode={darkMode}
-						loading="lazy"
 					/>
 				</Grid>
 			</Grid>
@@ -378,6 +458,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 						value={`${selectedCity.country}-${selectedCity.apiName}`}
 						onChange={handleCityChange}
 						displayEmpty
+						disabled={loading}
 					>
 						{/* Saudi Arabia Cities */}
 						<MenuItem disabled style={{ fontWeight: "bold", color: "#666" }}>
