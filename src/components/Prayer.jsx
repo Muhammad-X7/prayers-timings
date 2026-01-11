@@ -1,22 +1,10 @@
 import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import { memo } from "react";
 
-// PropTypes validation
-MediaCard.propTypes = {
-	name: PropTypes.string.isRequired,
-	time: PropTypes.string.isRequired,
-	image: PropTypes.string,
-	darkMode: PropTypes.bool
-};
-
-// MediaCard component displays a prayer card with an image, name, and time
-// Accepts props: name (prayer name), time (prayer time), image (image URL), darkMode (boolean)
-
-export default function MediaCard({ name, time, image, darkMode = true }) {
-	// Define dynamic styles based on darkMode
+function MediaCard({ name, time, image, darkMode = true }) {
 	const cardStyle = {
 		backgroundColor: darkMode ? "#282828ff" : "#ffffff",
 		color: darkMode ? "rgba(255, 255, 255, 0.87)" : "#242424",
@@ -24,27 +12,51 @@ export default function MediaCard({ name, time, image, darkMode = true }) {
 		boxShadow: darkMode
 			? "0 4px 7px rgba(0, 0, 0, 1)"
 			: "0 4px 7px rgba(85, 85, 85, 0.38)",
-		transition: "transform 0.3s ease, box-shadow 0.3s ease",
-		border: darkMode ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
+		border: darkMode
+			? "1px solid rgba(255,255,255,0.1)"
+			: "1px solid rgba(0,0,0,0.1)",
+		overflow: "hidden"
 	};
 
 	return (
 		<Card style={cardStyle}>
-			{/* Card image section */}
-			<CardMedia sx={{ height: 130 }} image={image} title="prayer time" />
+			{/* Image with srcset */}
+			<img
+				src={`/${image}_420.webp`}
+				srcSet={`
+          /${image}_420.webp 420w,
+          /${image}_664.webp 664w,
+          /${image}_908.webp 908w,
+          /${image}_1020.webp 1020w,
+          /${image}_1327.webp 1327w
+        `}
+				sizes="
+          (max-width: 600px) 100vw,
+          (max-width: 900px) 50vw,
+          (max-width: 1200px) 33vw,
+          20vw
+        "
+				alt={name}
+				loading="lazy"
+				decoding="async"
+				style={{
+					width: "100%",
+					height: "130px",
+					objectFit: "cover"
+				}}
+			/>
 
-			{/* Card content section */}
 			<CardContent>
-				{/* Prayer name */}
-				<h2 style={{ color: darkMode ? "rgba(255, 255, 255, 1)" : "#242424" }}>
+				<h2 style={{ color: darkMode ? "#fff" : "#242424" }}>
 					{name}
 				</h2>
 
-				{/* Prayer time */}
 				<Typography
 					variant="h2"
 					style={{
-						color: darkMode ? "rgba(255, 255, 255, 0.78)" : "rgba(0, 0, 0, 0.6)"
+						color: darkMode
+							? "rgba(255,255,255,0.78)"
+							: "rgba(0,0,0,0.6)"
 					}}
 				>
 					{time}
@@ -54,3 +66,11 @@ export default function MediaCard({ name, time, image, darkMode = true }) {
 	);
 }
 
+MediaCard.propTypes = {
+	name: PropTypes.string.isRequired,
+	time: PropTypes.string.isRequired,
+	image: PropTypes.string.isRequired,
+	darkMode: PropTypes.bool
+};
+
+export default memo(MediaCard);

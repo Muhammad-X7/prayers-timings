@@ -1,24 +1,113 @@
 import PropTypes from "prop-types";
-
+import CitySelector from "./CitySelector";
 import Grid from "@mui/material/Unstable_Grid2";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Prayer from "./Prayer";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import { Button, Alert, CircularProgress } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 import "moment/dist/locale/ar-dz";
-
 
 MainContent.propTypes = {
 	darkMode: PropTypes.bool.isRequired,
 	setDarkMode: PropTypes.func.isRequired
 };
+
+
+// Translations
+const translations = {
+	ar: {
+		title: "أوقات الصلاة",
+		remainingUntil: "متبقي حتى صلاة",
+		city: "المدينة",
+		saudiArabia: "السعودية",
+		iraq: "العراق",
+		language: "English",
+		darkMode: "الوضع النهاري",
+		lightMode: "الوضع الليلي",
+		loading: "جاري التحميل...",
+		errorLoading: "فشل تحميل الأوقات",
+		retry: "إعادة المحاولة"
+	},
+	en: {
+		title: "Prayer Times",
+		remainingUntil: "Remaining until",
+		city: "City",
+		saudiArabia: "Saudi Arabia",
+		iraq: "Iraq",
+		language: "العربية",
+		darkMode: "Light Mode",
+		lightMode: "Dark Mode",
+		loading: "Loading...",
+		errorLoading: "Failed to load times",
+		retry: "Retry"
+	}
+};
+
+// Available cities with Arabic and English names + coordinates
+const availableCities = [
+	// Saudi Arabia
+	{
+		displayName: { ar: "مكة المكرمة", en: "Makkah" },
+		apiName: "Makkah al Mukarramah",
+		country: "SA",
+		lat: 21.4225,
+		lng: 39.8262
+	},
+	{
+		displayName: { ar: "الرياض", en: "Riyadh" },
+		apiName: "Riyadh",
+		country: "SA",
+		lat: 24.7136,
+		lng: 46.6753
+	},
+	{
+		displayName: { ar: "جدة", en: "Jeddah" },
+		apiName: "Jeddah",
+		country: "SA",
+		lat: 21.5433,
+		lng: 39.1728
+	},
+	{
+		displayName: { ar: "الدمام", en: "Dammam" },
+		apiName: "Dammam",
+		country: "SA",
+		lat: 26.4207,
+		lng: 50.0888
+	},
+	// Iraq
+	{
+		displayName: { ar: "بغداد", en: "Baghdad" },
+		apiName: "Baghdad",
+		country: "IQ",
+		lat: 33.3152,
+		lng: 44.3661
+	},
+	{
+		displayName: { ar: "أربيل", en: "Erbil" },
+		apiName: "Erbil",
+		country: "IQ",
+		lat: 36.1911,
+		lng: 44.0092
+	},
+	{
+		displayName: { ar: "كركوك", en: "Kirkuk" },
+		apiName: "Kirkuk",
+		country: "IQ",
+		lat: 35.4681,
+		lng: 44.3922
+	},
+	{
+		displayName: { ar: "البصرة", en: "Basra" },
+		apiName: "Basra",
+		country: "IQ",
+		lat: 30.5085,
+		lng: 47.7835
+	}
+];
 
 export default function MainContent({ darkMode, setDarkMode }) {
 	// STATES مع القيم المحفوظة من localStorage
@@ -55,67 +144,6 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 	const [today, setToday] = useState("");
 
-	// Available cities with Arabic and English names + coordinates
-	const availableCities = [
-		// Saudi Arabia
-		{
-			displayName: { ar: "مكة المكرمة", en: "Makkah" },
-			apiName: "Makkah al Mukarramah",
-			country: "SA",
-			lat: 21.4225,
-			lng: 39.8262
-		},
-		{
-			displayName: { ar: "الرياض", en: "Riyadh" },
-			apiName: "Riyadh",
-			country: "SA",
-			lat: 24.7136,
-			lng: 46.6753
-		},
-		{
-			displayName: { ar: "جدة", en: "Jeddah" },
-			apiName: "Jeddah",
-			country: "SA",
-			lat: 21.5433,
-			lng: 39.1728
-		},
-		{
-			displayName: { ar: "الدمام", en: "Dammam" },
-			apiName: "Dammam",
-			country: "SA",
-			lat: 26.4207,
-			lng: 50.0888
-		},
-		// Iraq
-		{
-			displayName: { ar: "بغداد", en: "Baghdad" },
-			apiName: "Baghdad",
-			country: "IQ",
-			lat: 33.3152,
-			lng: 44.3661
-		},
-		{
-			displayName: { ar: "أربيل", en: "Erbil" },
-			apiName: "Erbil",
-			country: "IQ",
-			lat: 36.1911,
-			lng: 44.0092
-		},
-		{
-			displayName: { ar: "كركوك", en: "Kirkuk" },
-			apiName: "Kirkuk",
-			country: "IQ",
-			lat: 35.4681,
-			lng: 44.3922
-		},
-		{
-			displayName: { ar: "البصرة", en: "Basra" },
-			apiName: "Basra",
-			country: "IQ",
-			lat: 30.5085,
-			lng: 47.7835
-		}
-	];
 
 	const prayersArray = [
 		{ key: "Fajr", displayName: { ar: "الفجر", en: "Fajr" } },
@@ -125,60 +153,34 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		{ key: "Isha", displayName: { ar: "العشاء", en: "Isha" } },
 	];
 
-	// Translations
-	const translations = {
-		ar: {
-			title: "أوقات الصلاة",
-			remainingUntil: "متبقي حتى صلاة",
-			city: "المدينة",
-			saudiArabia: "السعودية",
-			iraq: "العراق",
-			language: "English",
-			darkMode: "الوضع النهاري",
-			lightMode: "الوضع الليلي",
-			loading: "جاري التحميل...",
-			errorLoading: "فشل تحميل الأوقات",
-			retry: "إعادة المحاولة"
-		},
-		en: {
-			title: "Prayer Times",
-			remainingUntil: "Remaining until",
-			city: "City",
-			saudiArabia: "Saudi Arabia",
-			iraq: "Iraq",
-			language: "العربية",
-			darkMode: "Light Mode",
-			lightMode: "Dark Mode",
-			loading: "Loading...",
-			errorLoading: "Failed to load times",
-			retry: "Retry"
-		}
-	};
 
-	const t = (key) => translations[language][key];
+	// const t = (key) => translations[language][key];
 
-	// حفظ اللغة في localStorage عند تغييرها
+	const t = useCallback(
+		(key) => translations[language]?.[key] ?? key,
+		[language]
+	);
+
 	useEffect(() => {
+		// حفظ اللغة
 		localStorage.setItem('prayerApp_language', language);
-		if (language === "ar") {
-			moment.locale("ar");
-		} else {
-			moment.locale("en");
+		moment.locale(language);
+
+		// حفظ المدينة فقط إذا كانت موجودة
+		if (selectedCity) {
+			localStorage.setItem(
+				'prayerApp_selectedCity',
+				JSON.stringify(selectedCity)
+			);
 		}
-	}, [language]);
+	}, [language, selectedCity]);
 
 
-	// حفظ المدينة المختارة في localStorage عند تغييرها
-	useEffect(() => {
-		localStorage.setItem('prayerApp_selectedCity', JSON.stringify(selectedCity));
-	}, [selectedCity]);
-
-
-
-	// استخدام Pray.zone API فقط - الأكثر موثوقية
+	// استخدام aladhan.com API فقط - الأكثر موثوقية
 	const getTimings = useCallback(async () => {
 		setLoading(true);
 		setError(null);
+		if (!selectedCity) return;
 
 		try {
 			const response = await axios.get(
@@ -203,12 +205,25 @@ export default function MainContent({ darkMode, setDarkMode }) {
 			});
 
 		} catch (err) {
-			setError("فشل تحميل أوقات الصلاة");
+			setError(err.response?.data?.message || t("errorLoading"));
 		} finally {
 			setLoading(false);
 		}
-	}, [selectedCity]);
+	}, [selectedCity, t]);
 
+
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
+	// جلب أوقات الصلاة عند تغيير المدينة
 	useEffect(() => {
 		getTimings();
 	}, [getTimings]);
@@ -282,13 +297,13 @@ export default function MainContent({ darkMode, setDarkMode }) {
 	};
 
 
-	const handleCityChange = (event) => {
+	const handleCityChange = useCallback((event) => {
 		const [country, apiName] = event.target.value.split('-');
 		const cityObject = availableCities.find((city) => {
 			return city.country === country && city.apiName === apiName;
 		});
 		setSelectedCity(cityObject);
-	};
+	}, []);
 
 	const toggleLanguage = () => {
 		setLanguage(language === "ar" ? "en" : "ar");
@@ -298,14 +313,13 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		setDarkMode(!darkMode);
 	};
 
-	const containerStyle = {
+	const containerStyle = useMemo(() => ({
 		direction: language === "ar" ? "rtl" : "ltr",
 		backgroundColor: darkMode ? "#1f1f1fff" : "#e9e9e9ff",
 		color: darkMode ? "#e9e9e9ff" : "#1f1f1fff",
 		minHeight: "calc(100vh - 40px)",
 		padding: "12px 18px"
-	};
-
+	}), [language, darkMode]);
 	return (
 		<div style={containerStyle}>
 			{/* رسالة خطأ مع زر إعادة المحاولة */}
@@ -400,97 +414,33 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 			{/* PRAYERS CARDS */}
 			<Grid container spacing={2} style={{ marginTop: "20px" }}>
-				<Grid xs={12} sm={6} md={4} lg={2.4}>
-					<Prayer
-						name={prayersArray[0].displayName[language]}
-						time={timings.Fajr}
-						image="Fajr.webp"
-						darkMode={darkMode}
-					/>
-				</Grid>
-				<Grid xs={12} sm={6} md={4} lg={2.4}>
-					<Prayer
-						name={prayersArray[1].displayName[language]}
-						time={timings.Dhuhr}
-						image="Dhuhr.webp"
-						darkMode={darkMode}
-					/>
-				</Grid>
-				<Grid xs={12} sm={6} md={4} lg={2.4}>
-					<Prayer
-						name={prayersArray[2].displayName[language]}
-						time={timings.Asr}
-						image="Asr.webp"
-						darkMode={darkMode}
-					/>
-				</Grid>
-				<Grid xs={12} sm={6} md={4} lg={2.4}>
-					<Prayer
-						name={prayersArray[3].displayName[language]}
-						time={timings.Sunset}
-						image="Sunset.webp"
-						darkMode={darkMode}
-					/>
-				</Grid>
-				<Grid xs={12} sm={6} md={4} lg={2.4}>
-					<Prayer
-						name={prayersArray[4].displayName[language]}
-						time={timings.Isha}
-						image="Isha.webp"
-						darkMode={darkMode}
-					/>
-				</Grid>
+				{prayersArray.map((prayer) => (
+					<Grid key={prayer.key} xs={12} sm={6} md={4} lg={2.4}>
+						<Prayer
+							name={prayer.displayName[language]}
+							time={timings[prayer.key]}
+							// هنا نفترض أن الصور بنفس أسماء المفاتيح
+							image={`${prayer.key}`}
+							darkMode={darkMode}
+						/>
+					</Grid>
+				))}
 			</Grid>
-
 			{/* SELECT CITY */}
 			<Stack
 				direction="row"
 				justifyContent={"center"}
 				style={{ marginTop: "20px" }}
 			>
-				<FormControl style={{ width: "280px" }}>
-					<Select
-						style={{
-							color: darkMode ? "white" : "#242424",
-							backgroundColor: darkMode ? "#424242" : "#ffffff"
-						}}
-						id="demo-simple-select"
-						value={`${selectedCity.country}-${selectedCity.apiName}`}
-						onChange={handleCityChange}
-						displayEmpty
-						disabled={loading}
-					>
-						{/* Saudi Arabia Cities */}
-						<MenuItem disabled style={{ fontWeight: "bold", color: "#666" }}>
-							{t("saudiArabia")}
-						</MenuItem>
-						{availableCities.filter(city => city.country === "SA").map((city) => {
-							return (
-								<MenuItem
-									value={`${city.country}-${city.apiName}`}
-									key={`${city.country}-${city.apiName}`}
-								>
-									{city.displayName[language]}
-								</MenuItem>
-							);
-						})}
-
-						{/* Iraq Cities */}
-						<MenuItem disabled style={{ fontWeight: "bold", color: "#666" }}>
-							{t("iraq")}
-						</MenuItem>
-						{availableCities.filter(city => city.country === "IQ").map((city) => {
-							return (
-								<MenuItem
-									value={`${city.country}-${city.apiName}`}
-									key={`${city.country}-${city.apiName}`}
-								>
-									{city.displayName[language]}
-								</MenuItem>
-							);
-						})}
-					</Select>
-				</FormControl>
+				<CitySelector
+					selectedCity={selectedCity}
+					handleCityChange={handleCityChange}
+					availableCities={availableCities}
+					language={language}
+					darkMode={darkMode}
+					loading={loading}
+					t={t}
+				/>
 			</Stack>
 		</div>
 	);
