@@ -1,15 +1,18 @@
 import PropTypes from "prop-types";
-import CitySelector from "./CitySelector";
 import Grid from "@mui/material/Unstable_Grid2";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Prayer from "./Prayer";
-import { Button, Alert, CircularProgress } from "@mui/material";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import moment from "moment";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
 import "moment/dist/locale/ar-dz";
+
+import CitySelector from "./CitySelector";
 
 MainContent.propTypes = {
 	darkMode: PropTypes.bool.isRequired,

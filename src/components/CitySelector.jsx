@@ -5,7 +5,6 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 
-// استخدام React.memo لمنع إعادة الرندر إلا إذا تغيرت الـ props فعلياً
 const CitySelector = React.memo(({
     selectedCity,
     handleCityChange,
@@ -15,36 +14,34 @@ const CitySelector = React.memo(({
     loading,
     t
 }) => {
-    console.log("CitySelector Rendered"); // للتأكد من أنه لا يعمل كل ثانية
-
     return (
         <Stack direction="row" justifyContent="center" style={{ marginTop: "20px" }}>
             <FormControl style={{ width: "280px" }}>
                 <Select
-                    style={{
-                        color: darkMode ? "white" : "#242424",
-                        backgroundColor: darkMode ? "#424242" : "#ffffff"
-                    }}
+                    aria-label={t("city")} // ترجمة اسم العنصر
+                    labelId="city-select-label"
                     value={`${selectedCity.country}-${selectedCity.apiName}`}
                     onChange={handleCityChange}
                     displayEmpty
                     disabled={loading}
+                    style={{
+                        color: darkMode ? "white" : "#242424",
+                        backgroundColor: darkMode ? "#424242" : "#ffffff"
+                    }}
                 >
-                    {/* السعودية */}
                     <MenuItem disabled style={{ fontWeight: "bold", color: "#666" }}>
                         {t("saudiArabia")}
                     </MenuItem>
-                    {availableCities.filter(city => city.country === "SA").map((city) => (
+                    {availableCities.filter(city => city.country === "SA").map(city => (
                         <MenuItem key={`${city.country}-${city.apiName}`} value={`${city.country}-${city.apiName}`}>
                             {city.displayName[language]}
                         </MenuItem>
                     ))}
 
-                    {/* العراق */}
                     <MenuItem disabled style={{ fontWeight: "bold", color: "#666" }}>
                         {t("iraq")}
                     </MenuItem>
-                    {availableCities.filter(city => city.country === "IQ").map((city) => (
+                    {availableCities.filter(city => city.country === "IQ").map(city => (
                         <MenuItem key={`${city.country}-${city.apiName}`} value={`${city.country}-${city.apiName}`}>
                             {city.displayName[language]}
                         </MenuItem>

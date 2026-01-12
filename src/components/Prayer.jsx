@@ -37,7 +37,7 @@ function MediaCard({ name, time, image, darkMode = true }) {
           20vw
         "
 				alt={name}
-				loading="lazy"
+				fetchPriority="high"
 				decoding="async"
 				style={{
 					width: "100%",
