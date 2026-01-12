@@ -22,9 +22,22 @@ function MediaCard({ name, time, image, darkMode = true }) {
 		<Card style={cardStyle}>
 			{/* Image with srcset */}
 			<img
-				src={`/${image}.webp`}
+				src={`/${image}_420.webp`}
+				srcSet={`
+          /${image}_420.webp 420w,
+          /${image}_664.webp 664w,
+          /${image}_908.webp 908w,
+          /${image}_1020.webp 1020w,
+          /${image}_1327.webp 1327w
+        `}
+				sizes="
+          (max-width: 600px) 100vw,
+          (max-width: 900px) 50vw,
+          (max-width: 1200px) 33vw,
+          20vw
+        "
 				alt={name}
-				// fetchPriority="high"
+				fetchPriority="high"
 				decoding="async"
 				style={{
 					width: "100%",
