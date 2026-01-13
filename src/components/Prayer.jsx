@@ -21,7 +21,7 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 	return (
 		<Card style={cardStyle}>
 			<img
-				src={`/${image}.webp`}
+				src={`/${image}_.webp`}
 				// 	<img
 				// 		src={`/${image}_420.webp`}
 				// 		srcSet={`
