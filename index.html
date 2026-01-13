@@ -1,17 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="/Isha.ico" />
+
+    <!-- Preconnect لتحسين سرعة التحميل -->
+    <link rel="preconnect" href="https://api.aladhan.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- DNS Prefetch كـ fallback -->
+    <link rel="dns-prefetch" href="https://api.aladhan.com" />
+
+    <title>Prayer Times</title>
+
+    <!-- تحسين SEO -->
     <meta
       name="description"
-      content="موقع يوضح أوقات الصلاة بدقة لكل مدينة في السعودية والعراق مع إمكانية اختيار المدينة والتبديل بين الوضع الليلي والنهاري."
+      content="تطبيق أوقات الصلاة للمدن السعودية والعراقية - Prayer times for Saudi and Iraqi cities"
     />
-    <title>Prayer Times</title>
+    <meta name="theme-color" content="#1f1f1fff" />
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx" defer></script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

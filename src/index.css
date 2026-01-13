@@ -1,17 +1,15 @@
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 400;
   line-height: 1.5;
   color-scheme: light dark;
 
-  /* Default colors - will be overridden by JavaScript */
   --bg-color: #242424;
   --text-color: rgba(255, 255, 255, 0.87);
 
   color: var(--text-color);
   background-color: var(--bg-color);
 
-  /* overflow-y: hidden; */
   overflow-x: hidden;
 
   font-synthesis: none;
@@ -29,13 +27,28 @@
   font-display: swap;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* RTL Support */
+/* تحسين الأداء بإزالة الأنيميشن غير الضرورية */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .rtl {
   direction: rtl;
 }
@@ -44,19 +57,16 @@ body {
   direction: ltr;
 }
 
-/* Dark mode specific styles */
 .dark-mode {
   background-color: #242424;
   color: rgba(255, 255, 255, 0.87);
 }
 
-/* Light mode specific styles */
 .light-mode {
   background-color: #ffffff;
   color: #242424;
 }
 
-/* MUI Select styles for dark mode */
 .MuiSelect-select {
   color: inherit !important;
 }
@@ -71,4 +81,16 @@ body {
 
 .MuiSvgIcon-root {
   color: inherit !important;
+}
+
+/* تحسين أداء الصور */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* تحسين scroll performance */
+* {
+  -webkit-overflow-scrolling: touch;
 }

@@ -20,34 +20,32 @@ function MediaCard({ name, time, image, darkMode = true }) {
 
 	return (
 		<Card style={cardStyle}>
-			{/* Image with srcset */}
+			{/* تحسين تحميل الصور مع loading="lazy" إلا للصورة الأولى */}
 			<img
 				src={`/${image}_420.webp`}
 				srcSet={`
           /${image}_420.webp 420w,
           /${image}_664.webp 664w,
-          /${image}_908.webp 908w,
-          /${image}_1020.webp 1020w,
-          /${image}_1327.webp 1327w
+          /${image}_908.webp 908w
         `}
 				sizes="
           (max-width: 600px) 100vw,
           (max-width: 900px) 50vw,
-          (max-width: 1200px) 33vw,
-          20vw
+          33vw
         "
 				alt={name}
-				fetchPriority="high"
+				loading="lazy"
 				decoding="async"
 				style={{
 					width: "100%",
 					height: "130px",
-					objectFit: "cover"
+					objectFit: "cover",
+					backgroundColor: darkMode ? "#1a1a1a" : "#f0f0f0"
 				}}
 			/>
 
 			<CardContent>
-				<h2 style={{ color: darkMode ? "#fff" : "#242424" }}>
+				<h2 style={{ color: darkMode ? "#fff" : "#242424", margin: "0 0 8px 0" }}>
 					{name}
 				</h2>
 
@@ -56,7 +54,9 @@ function MediaCard({ name, time, image, darkMode = true }) {
 					style={{
 						color: darkMode
 							? "rgba(255,255,255,0.78)"
-							: "rgba(0,0,0,0.6)"
+							: "rgba(0,0,0,0.6)",
+						fontSize: "1.5rem",
+						margin: 0
 					}}
 				>
 					{time}

@@ -9,9 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import moment from "moment";
 import { useState, useEffect, useCallback, useMemo } from "react";
-
 import "moment/dist/locale/ar-dz";
-
 import CitySelector from "./CitySelector";
 
 MainContent.propTypes = {
@@ -19,8 +17,6 @@ MainContent.propTypes = {
 	setDarkMode: PropTypes.func.isRequired
 };
 
-
-// Translations
 const translations = {
 	ar: {
 		title: "أوقات الصلاة",
@@ -50,9 +46,7 @@ const translations = {
 	}
 };
 
-// Available cities with Arabic and English names + coordinates
 const availableCities = [
-	// Saudi Arabia
 	{
 		displayName: { ar: "مكة المكرمة", en: "Makkah" },
 		apiName: "Makkah al Mukarramah",
@@ -81,7 +75,6 @@ const availableCities = [
 		lat: 26.4207,
 		lng: 50.0888
 	},
-	// Iraq
 	{
 		displayName: { ar: "بغداد", en: "Baghdad" },
 		apiName: "Baghdad",
@@ -112,8 +105,20 @@ const availableCities = [
 	}
 ];
 
+const prayersArray = [
+	{ key: "Fajr", displayName: { ar: "الفجر", en: "Fajr" } },
+	{ key: "Dhuhr", displayName: { ar: "الظهر", en: "Dhuhr" } },
+	{ key: "Asr", displayName: { ar: "العصر", en: "Asr" } },
+	{ key: "Sunset", displayName: { ar: "المغرب", en: "Maghrib" } },
+	{ key: "Isha", displayName: { ar: "العشاء", en: "Isha" } },
+];
+
+const timeToMinutes = (time) => {
+	const [hours, minutes] = time.split(':').map(Number);
+	return hours * 60 + minutes;
+};
+
 export default function MainContent({ darkMode, setDarkMode }) {
-	// STATES مع القيم المحفوظة من localStorage
 	const [nextPrayerIndex, setNextPrayerIndex] = useState(2);
 	const [timings, setTimings] = useState({
 		Fajr: "04:20",
@@ -122,64 +127,25 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		Sunset: "18:03",
 		Isha: "19:33",
 	});
-
 	const [remainingTime, setRemainingTime] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-
-	// تحميل اللغة المحفوظة أو الافتراضية
-	const [language, setLanguage] = useState(() => {
-		const savedLanguage = localStorage.getItem('prayerApp_language');
-		return savedLanguage ? savedLanguage : 'ar';
+	const [language, setLanguage] = useState('ar');
+	const [selectedCity, setSelectedCity] = useState({
+		displayName: { ar: "مكة المكرمة", en: "Makkah" },
+		apiName: "Makkah al Mukarramah",
+		country: "SA",
+		lat: 21.4225,
+		lng: 39.8262
 	});
-
-	// تحميل المدينة المحفوظة أو الافتراضية
-	const [selectedCity, setSelectedCity] = useState(() => {
-		const savedCity = localStorage.getItem('prayerApp_selectedCity');
-		return savedCity ? JSON.parse(savedCity) : {
-			displayName: { ar: "مكة المكرمة", en: "Makkah" },
-			apiName: "Makkah al Mukarramah",
-			country: "SA",
-			lat: 21.4225,
-			lng: 39.8262
-		};
-	});
-
 	const [today, setToday] = useState("");
 
-
-	const prayersArray = [
-		{ key: "Fajr", displayName: { ar: "الفجر", en: "Fajr" } },
-		{ key: "Dhuhr", displayName: { ar: "الظهر", en: "Dhuhr" } },
-		{ key: "Asr", displayName: { ar: "العصر", en: "Asr" } },
-		{ key: "Sunset", displayName: { ar: "المغرب", en: "Maghrib" } },
-		{ key: "Isha", displayName: { ar: "العشاء", en: "Isha" } },
-	];
-
-
-	// const t = (key) => translations[language][key];
-
-	const t = useCallback(
-		(key) => translations[language]?.[key] ?? key,
-		[language]
-	);
+	const t = useCallback((key) => translations[language]?.[key] ?? key, [language]);
 
 	useEffect(() => {
-		// حفظ اللغة
-		localStorage.setItem('prayerApp_language', language);
 		moment.locale(language);
+	}, [language]);
 
-		// حفظ المدينة فقط إذا كانت موجودة
-		if (selectedCity) {
-			localStorage.setItem(
-				'prayerApp_selectedCity',
-				JSON.stringify(selectedCity)
-			);
-		}
-	}, [language, selectedCity]);
-
-
-	// استخدام aladhan.com API فقط - الأكثر موثوقية
 	const getTimings = useCallback(async () => {
 		setLoading(true);
 		setError(null);
@@ -192,13 +158,12 @@ export default function MainContent({ darkMode, setDarkMode }) {
 					params: {
 						latitude: selectedCity.lat,
 						longitude: selectedCity.lng,
-						method: 4 // Umm Al-Qura
+						method: 4
 					}
 				}
 			);
 
 			const times = response.data.data.timings;
-
 			setTimings({
 				Fajr: times.Fajr,
 				Dhuhr: times.Dhuhr,
@@ -206,7 +171,6 @@ export default function MainContent({ darkMode, setDarkMode }) {
 				Sunset: times.Maghrib,
 				Isha: times.Isha
 			});
-
 		} catch (err) {
 			setError(err.response?.data?.message || t("errorLoading"));
 		} finally {
@@ -214,24 +178,10 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		}
 	}, [selectedCity, t]);
 
-
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
-	// جلب أوقات الصلاة عند تغيير المدينة
 	useEffect(() => {
 		getTimings();
 	}, [getTimings]);
 
-	// دالة العد التنازلي للصلاة القادمة
 	const setupCountdownTimer = useCallback(() => {
 		const now = new Date();
 		const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -253,7 +203,7 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		}
 
 		if (currentTime >= prayerTimes[prayerTimes.length - 1].minutes) {
-			prayerIndex = 0; // next day Fajr
+			prayerIndex = 0;
 		}
 
 		setNextPrayerIndex(prayerIndex);
@@ -270,9 +220,8 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		);
 	}, [timings]);
 
-
 	useEffect(() => {
-		let interval = setInterval(() => {
+		const interval = setInterval(() => {
 			setupCountdownTimer();
 		}, 1000);
 
@@ -294,12 +243,6 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		return () => clearInterval(interval);
 	}, [language, setupCountdownTimer]);
 
-	const timeToMinutes = (time) => {
-		const [hours, minutes] = time.split(':').map(Number);
-		return hours * 60 + minutes;
-	};
-
-
 	const handleCityChange = useCallback((event) => {
 		const [country, apiName] = event.target.value.split('-');
 		const cityObject = availableCities.find((city) => {
@@ -308,13 +251,13 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		setSelectedCity(cityObject);
 	}, []);
 
-	const toggleLanguage = () => {
-		setLanguage(language === "ar" ? "en" : "ar");
-	};
+	const toggleLanguage = useCallback(() => {
+		setLanguage(prev => prev === "ar" ? "en" : "ar");
+	}, []);
 
-	const toggleDarkMode = () => {
-		setDarkMode(!darkMode);
-	};
+	const toggleDarkMode = useCallback(() => {
+		setDarkMode(prev => !prev);
+	}, [setDarkMode]);
 
 	const containerStyle = useMemo(() => ({
 		direction: language === "ar" ? "rtl" : "ltr",
@@ -323,9 +266,9 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		minHeight: "calc(100vh - 40px)",
 		padding: "12px 18px"
 	}), [language, darkMode]);
+
 	return (
 		<div style={containerStyle}>
-			{/* رسالة خطأ مع زر إعادة المحاولة */}
 			{error && (
 				<Alert
 					severity="error"
@@ -349,37 +292,30 @@ export default function MainContent({ darkMode, setDarkMode }) {
 				</Alert>
 			)}
 
-			{/* TOP ROW */}
 			<Grid container spacing={2} alignItems="center">
-				{/* التاريخ */}
 				<Grid xs={12} sm={5}>
-					<h2>{today}</h2>
-					<h1>
+					<h2 style={{ margin: "8px 0" }}>{today}</h2>
+					<h1 style={{ margin: "8px 0", display: "flex", alignItems: "center", gap: "10px" }}>
 						{selectedCity.displayName[language]}
 						{loading && (
 							<CircularProgress
 								size={20}
-								style={{
-									marginRight: language === "ar" ? "10px" : "0",
-									marginLeft: language === "en" ? "10px" : "0",
-									color: "#00b040ff"
-								}}
+								style={{ color: "#00b040ff" }}
 							/>
 						)}
 					</h1>
 				</Grid>
 				<Grid xs={12} sm={5}>
 					<div>
-						<h2>
+						<h2 style={{ margin: "8px 0" }}>
 							{t("remainingUntil")} {prayersArray[nextPrayerIndex].displayName[language]}
 						</h2>
-						<h1 style={{ color: "#00b040ff" }}>{remainingTime}</h1>
+						<h1 style={{ color: "#00b040ff", margin: "8px 0" }}>{remainingTime}</h1>
 					</div>
 				</Grid>
 
-				{/* أزرار اللغة والوضع */}
 				<Grid xs={12} sm={2}>
-					<Stack direction="row" spacing={2}>
+					<Stack direction="row" spacing={1} justifyContent="center">
 						<Button
 							onClick={toggleLanguage}
 							variant="outlined"
@@ -387,10 +323,9 @@ export default function MainContent({ darkMode, setDarkMode }) {
 							style={{
 								color: darkMode ? "white" : "#242424",
 								borderColor: darkMode ? "white" : "#242424",
-								fontSize: "12px",
-								marginLeft: "10px",
-								padding: "8px 8px"
-
+								fontSize: "11px",
+								padding: "6px 12px",
+								minWidth: "70px"
 							}}
 						>
 							{t("language")}
@@ -402,9 +337,9 @@ export default function MainContent({ darkMode, setDarkMode }) {
 							style={{
 								color: darkMode ? "white" : "#242424",
 								borderColor: darkMode ? "white" : "#242424",
-								fontSize: "12px",
-								marginRight: "10px",
-								padding: "8px 8px"
+								fontSize: "11px",
+								padding: "6px 12px",
+								minWidth: "70px"
 							}}
 						>
 							{darkMode ? t("darkMode") : t("lightMode")}
@@ -413,28 +348,22 @@ export default function MainContent({ darkMode, setDarkMode }) {
 				</Grid>
 			</Grid>
 
-			<Divider style={{ borderColor: darkMode ? "white" : "#242424", opacity: "0.1" }} />
+			<Divider style={{ borderColor: darkMode ? "white" : "#242424", opacity: "0.1", margin: "16px 0" }} />
 
-			{/* PRAYERS CARDS */}
-			<Grid container spacing={2} style={{ marginTop: "20px" }}>
+			<Grid container spacing={2} style={{ marginTop: "12px" }}>
 				{prayersArray.map((prayer) => (
 					<Grid key={prayer.key} xs={12} sm={6} md={4} lg={2.4}>
 						<Prayer
 							name={prayer.displayName[language]}
 							time={timings[prayer.key]}
-							// هنا نفترض أن الصور بنفس أسماء المفاتيح
-							image={`${prayer.key}`}
+							image={prayer.key}
 							darkMode={darkMode}
 						/>
 					</Grid>
 				))}
 			</Grid>
-			{/* SELECT CITY */}
-			<Stack
-				direction="row"
-				justifyContent={"center"}
-				style={{ marginTop: "20px" }}
-			>
+
+			<Stack direction="row" justifyContent="center" style={{ marginTop: "20px" }}>
 				<CitySelector
 					selectedCity={selectedCity}
 					handleCityChange={handleCityChange}
