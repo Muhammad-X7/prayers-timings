@@ -21,15 +21,12 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 	return (
 		<Card style={cardStyle}>
 			<img
-				src={`/${image}_.webp`}
-				// 	<img
-				// 		src={`/${image}_420.webp`}
-				// 		srcSet={`
-				//   /${image}_420.webp 420w,
-				//   /${image}_664.webp 664w,
-				//   /${image}_1020.webp 1020w,
-				//   /${image}_1327.webp 1327w
-				// `}
+				src={`/${image}_420.webp`}
+				srcSet={`
+				  /${image}_420.webp 420w,
+				  /${image}_900.webp 900w,
+				  /${image}_1327.webp 1327w
+				`}
 				sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
 				alt={name}
 				loading={isPriority ? "eager" : "lazy"}
