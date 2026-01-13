@@ -1,8 +1,7 @@
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
   font-weight: 400;
-
+  line-height: 1.5;
   color-scheme: light dark;
 
   /* Default colors - will be overridden by JavaScript */
@@ -20,6 +19,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 body {
