@@ -221,25 +221,26 @@ export default function MainContent({ darkMode, setDarkMode }) {
 	}, [timings]);
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			setupCountdownTimer();
-		}, 1000);
+		const interval = setInterval(setupCountdownTimer, 1000);
 
-		const now = new Date();
-		setToday(
-			now.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
-				weekday: "long",
-				year: "numeric",
-				month: "long",
-				day: "numeric",
-			}) +
-			" | " +
-			now.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
-				hour: "2-digit",
-				minute: "2-digit",
-			})
-		);
+		const updateDate = () => {
+			const now = new Date();
+			setToday(
+				now.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
+					weekday: "long",
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}) +
+				" | " +
+				now.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
+					hour: "2-digit",
+					minute: "2-digit",
+				})
+			);
+		};
 
+		updateDate();
 		return () => clearInterval(interval);
 	}, [language, setupCountdownTimer]);
 
@@ -351,13 +352,14 @@ export default function MainContent({ darkMode, setDarkMode }) {
 			<Divider style={{ borderColor: darkMode ? "white" : "#242424", opacity: "0.1", margin: "16px 0" }} />
 
 			<Grid container spacing={2} style={{ marginTop: "12px" }}>
-				{prayersArray.map((prayer) => (
+				{prayersArray.map((prayer, index) => (
 					<Grid key={prayer.key} xs={12} sm={6} md={4} lg={2.4}>
 						<Prayer
 							name={prayer.displayName[language]}
 							time={timings[prayer.key]}
 							image={prayer.key}
 							darkMode={darkMode}
+							isPriority={index === 1}
 						/>
 					</Grid>
 				))}

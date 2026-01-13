@@ -4,7 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { memo } from "react";
 
-function MediaCard({ name, time, image, darkMode = true }) {
+function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 	const cardStyle = {
 		backgroundColor: darkMode ? "#282828ff" : "#ffffff",
 		color: darkMode ? "rgba(255, 255, 255, 0.87)" : "#242424",
@@ -20,7 +20,6 @@ function MediaCard({ name, time, image, darkMode = true }) {
 
 	return (
 		<Card style={cardStyle}>
-			{/* تحسين تحميل الصور مع loading="lazy" إلا للصورة الأولى */}
 			<img
 				src={`/${image}_420.webp`}
 				srcSet={`
@@ -28,13 +27,10 @@ function MediaCard({ name, time, image, darkMode = true }) {
           /${image}_664.webp 664w,
           /${image}_908.webp 908w
         `}
-				sizes="
-          (max-width: 600px) 100vw,
-          (max-width: 900px) 50vw,
-          33vw
-        "
+				sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
 				alt={name}
-				loading="lazy"
+				loading={isPriority ? "eager" : "lazy"}
+				fetchPriority={isPriority ? "high" : "auto"}
 				decoding="async"
 				style={{
 					width: "100%",
@@ -44,19 +40,23 @@ function MediaCard({ name, time, image, darkMode = true }) {
 				}}
 			/>
 
-			<CardContent>
-				<h2 style={{ color: darkMode ? "#fff" : "#242424", margin: "0 0 8px 0" }}>
+			<CardContent style={{ padding: "12px" }}>
+				<h2 style={{
+					color: darkMode ? "#fff" : "#242424",
+					margin: "0 0 8px 0",
+					fontSize: "1.25rem",
+					fontWeight: 600
+				}}>
 					{name}
 				</h2>
 
 				<Typography
 					variant="h2"
 					style={{
-						color: darkMode
-							? "rgba(255,255,255,0.78)"
-							: "rgba(0,0,0,0.6)",
+						color: darkMode ? "rgba(255,255,255,0.78)" : "rgba(0,0,0,0.6)",
 						fontSize: "1.5rem",
-						margin: 0
+						margin: 0,
+						fontWeight: 400
 					}}
 				>
 					{time}
@@ -70,7 +70,8 @@ MediaCard.propTypes = {
 	name: PropTypes.string.isRequired,
 	time: PropTypes.string.isRequired,
 	image: PropTypes.string.isRequired,
-	darkMode: PropTypes.bool
+	darkMode: PropTypes.bool,
+	isPriority: PropTypes.bool
 };
 
 export default memo(MediaCard);
