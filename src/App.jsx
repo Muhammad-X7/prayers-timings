@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainContent from "./components/MainContent";
 import { Container } from "@mui/material";
 
 function App() {
-	// استخدام React state فقط بدون localStorage
-	const [darkMode, setDarkMode] = useState(true);
+	// Dark Mode من localStorage أو القيمة الافتراضية true
+	const [darkMode, setDarkMode] = useState(() => {
+		const saved = localStorage.getItem("darkMode");
+		return saved !== null ? saved === "true" : true;
+	});
+
+	// حفظ darkMode في localStorage عند التغيير
+	useEffect(() => {
+		localStorage.setItem("darkMode", darkMode);
+	}, [darkMode]);
 
 	return (
 		<div

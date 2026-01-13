@@ -96,14 +96,25 @@ export const useCountdown = (timings, prayersArray) => {
 
         const hours = Math.floor(timeDiff / 60);
         const minutes = timeDiff % 60;
-        const seconds = 60 - now.getSeconds();
+        const seconds = (60 - now.getSeconds()) % 60;
+
+        // setRemainingTime(
+        //     `${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+        // );
 
         setRemainingTime(
-            `${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
+            `${hours.toString().padStart(2, "0")} : 
+                ${minutes.toString().padStart(2, "0")} : 
+                ${seconds.toString().padStart(2, "0")}`
         );
+
     }, [timings]);
 
     useEffect(() => {
+        if (!timings) return;
+
+        setupCountdownTimer(); // ← تنفيذ فوري بدون انتظار
+
         const interval = setInterval(setupCountdownTimer, 1000);
         return () => clearInterval(interval);
     }, [setupCountdownTimer]);

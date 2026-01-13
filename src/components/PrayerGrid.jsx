@@ -1,14 +1,18 @@
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Unstable_Grid2";
 import Prayer from "./Prayer";
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 
-const PrayerGrid = memo(({
-    prayersArray,
-    timings,
-    language,
-    darkMode
-}) => {
+const PrayerGrid = memo(({ prayersArray, timings, language, darkMode }) => {
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+    // تحديث عرض الشاشة عند تغيير الحجم
+    useEffect(() => {
+        const handleResize = () => setScreenWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <Grid container spacing={2} style={{ marginTop: "12px" }}>
             {prayersArray.map((prayer, index) => (
@@ -18,7 +22,11 @@ const PrayerGrid = memo(({
                         time={timings[prayer.key]}
                         image={prayer.key}
                         darkMode={darkMode}
-                        isPriority={index === 1}
+                        isPriority={
+                            screenWidth > 900 // الشاشات الكبيرة → كل الصور eager
+                                ? true
+                                : index === 0 // الشاشات الصغيرة والمتوسطة → الصورة الأولى فقط
+                        }
                     />
                 </Grid>
             ))}

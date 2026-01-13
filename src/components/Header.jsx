@@ -22,7 +22,7 @@ const Header = memo(({
         <Grid container spacing={2} alignItems="center">
             {/* التاريخ والمدينة */}
             <Grid xs={12} sm={5}>
-                <h2 style={{ margin: "8px 0" }}>{today}</h2>
+                <h2 style={{ margin: "8px 0 12px" }}>{today}</h2>
                 <h1 style={{
                     margin: "8px 0",
                     display: "flex",
@@ -45,7 +45,7 @@ const Header = memo(({
                     <h2 style={{ margin: "8px 0" }}>
                         {remainingUntil} {nextPrayerName}
                     </h2>
-                    <h1 style={{ color: "#00b040ff", margin: "8px 0" }}>
+                    <h1 style={{ color: "#00b040ff", margin: "8px 0", fontSize: "2.3rem" }}>
                         {remainingTime}
                     </h1>
                 </div>
@@ -53,7 +53,7 @@ const Header = memo(({
 
             {/* أزرار اللغة والوضع */}
             <Grid xs={12} sm={2}>
-                <Stack direction="row" spacing={1} justifyContent="center">
+                <Stack direction="row" style={{ gap: "20px" }} spacing={1} justifyContent="center">
                     <Button
                         onClick={onToggleLanguage}
                         variant="outlined"
@@ -62,7 +62,7 @@ const Header = memo(({
                             color: darkMode ? "white" : "#242424",
                             borderColor: darkMode ? "white" : "#242424",
                             fontSize: "11px",
-                            padding: "6px 12px",
+                            padding: "6px 10px",
                             minWidth: "70px"
                         }}
                     >
@@ -76,8 +76,8 @@ const Header = memo(({
                             color: darkMode ? "white" : "#242424",
                             borderColor: darkMode ? "white" : "#242424",
                             fontSize: "11px",
-                            padding: "6px 12px",
-                            minWidth: "70px"
+                            padding: "6px 6px",
+                            minWidth: "90px"
                         }}
                     >
                         {darkMode ? t("darkMode") : t("lightMode")}
