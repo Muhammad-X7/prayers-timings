@@ -25,7 +25,8 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 				srcSet={`
           /${image}_420.webp 420w,
           /${image}_664.webp 664w,
-          /${image}_908.webp 908w
+          /${image}_1020.webp 1020w,
+          /${image}_1327.webp 1327w
         `}
 				sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
 				alt={name}
