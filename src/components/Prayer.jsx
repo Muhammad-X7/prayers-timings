@@ -35,7 +35,7 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 				decoding="async"
 				style={{
 					width: "100%",
-					height: "130px",
+					height: "150px",
 					objectFit: "cover",
 					backgroundColor: darkMode ? "#1a1a1a" : "#f0f0f0"
 				}}
@@ -44,7 +44,7 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 			<CardContent style={{ padding: "12px" }}>
 				<h2 style={{
 					color: darkMode ? "#fff" : "#242424",
-					margin: "0 0 8px 0",
+					margin: "10px 0 8px 0",
 					fontSize: "1.25rem",
 					fontWeight: 600
 				}}>
@@ -55,8 +55,8 @@ function MediaCard({ name, time, image, darkMode = true, isPriority = false }) {
 					variant="h2"
 					style={{
 						color: darkMode ? "rgba(255,255,255,0.78)" : "rgba(0,0,0,0.6)",
-						fontSize: "1.5rem",
-						margin: 0,
+						fontSize: "3.75rem",
+						margin: "20px 0 8px 0",
 						fontWeight: 400
 					}}
 				>
