@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import MainContent from "./components/MainContent";
-import { Container } from "@mui/material";
+import Container from "@mui/material/Container";
 
 function App() {
 	// Dark Mode من localStorage أو القيمة الافتراضية true
