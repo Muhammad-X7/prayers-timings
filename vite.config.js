@@ -10,11 +10,25 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes("node_modules")) {
             if (id.includes("@mui")) return "mui";
-            if (id.includes("react")) return "react-vendor";
+            if (id.includes("react") || id.includes("react-dom"))
+              return "react-vendor";
+            if (id.includes("axios")) return "axios";
+            if (id.includes("moment")) return "moment"; // عزل moment في chunk منفصل
             return "vendor";
           }
         },
       },
+    },
+    // إضافة هذه الخيارات لتحسين التوافق
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "@mui/material", "axios", "moment"],
+    esbuildOptions: {
+      target: "esnext",
     },
   },
 });
