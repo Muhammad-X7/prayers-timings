@@ -22,7 +22,17 @@ const Header = memo(({
         <Grid container spacing={2} alignItems="center">
             {/* التاريخ والمدينة */}
             <Grid xs={12} sm={5}>
-                <h2 style={{ margin: "8px 0 12px" }}>{today}</h2>
+                <h2 className="today">{today}</h2>
+                <h1 className="city">
+                    {cityName}
+                    {loading && (
+                        <CircularProgress
+                            size={20}
+                            style={{ color: "#00b040ff" }}
+                        />
+                    )}
+                </h1>
+                {/* <h2 style={{ margin: "8px 0 12px" }}>{today}</h2>
                 <h1 style={{
                     margin: "8px 0",
                     display: "flex",
@@ -36,34 +46,40 @@ const Header = memo(({
                             style={{ color: "#00b040ff" }}
                         />
                     )}
-                </h1>
+                </h1> */}
             </Grid>
 
             {/* العد التنازلي */}
             <Grid xs={12} sm={5}>
                 <div>
+                    <h2 className="remaining-until">
+                        {remainingUntil} {nextPrayerName}
+                    </h2>
+                    <h1 className="remaining-time">
+                        {remainingTime}
+                    </h1>
+                </div>
+                {/* <div>
                     <h2 style={{ margin: "8px 0" }}>
                         {remainingUntil} {nextPrayerName}
                     </h2>
                     <h1 style={{ color: "#00b040ff", margin: "8px 0", fontSize: "2.3rem" }}>
                         {remainingTime}
                     </h1>
-                </div>
+                </div> */}
             </Grid>
 
             {/* أزرار اللغة والوضع */}
             <Grid xs={12} sm={2}>
-                <Stack direction="row" style={{ gap: "20px" }} spacing={1} justifyContent="center">
+                <Stack className="stack-btn" direction="row" style={{ gap: "20px" }} spacing={1} justifyContent="center">
                     <Button
                         onClick={onToggleLanguage}
                         variant="outlined"
                         size="small"
+                        className="btn-mode"
                         style={{
                             color: darkMode ? "white" : "#242424",
                             borderColor: darkMode ? "white" : "#242424",
-                            fontSize: "11px",
-                            padding: "6px 10px",
-                            minWidth: "70px"
                         }}
                     >
                         {t("language")}
@@ -72,12 +88,10 @@ const Header = memo(({
                         onClick={onToggleDarkMode}
                         variant="outlined"
                         size="small"
+                        className="btn-language"
                         style={{
                             color: darkMode ? "white" : "#242424",
                             borderColor: darkMode ? "white" : "#242424",
-                            fontSize: "11px",
-                            padding: "6px 6px",
-                            minWidth: "90px"
                         }}
                     >
                         {darkMode ? t("darkMode") : t("lightMode")}
