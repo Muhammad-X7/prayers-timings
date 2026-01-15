@@ -32,21 +32,6 @@ const Header = memo(({
                         />
                     )}
                 </h1>
-                {/* <h2 style={{ margin: "8px 0 12px" }}>{today}</h2>
-                <h1 style={{
-                    margin: "8px 0",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px"
-                }}>
-                    {cityName}
-                    {loading && (
-                        <CircularProgress
-                            size={20}
-                            style={{ color: "#00b040ff" }}
-                        />
-                    )}
-                </h1> */}
             </Grid>
 
             {/* العد التنازلي */}
@@ -59,14 +44,6 @@ const Header = memo(({
                         {remainingTime}
                     </h1>
                 </div>
-                {/* <div>
-                    <h2 style={{ margin: "8px 0" }}>
-                        {remainingUntil} {nextPrayerName}
-                    </h2>
-                    <h1 style={{ color: "#00b040ff", margin: "8px 0", fontSize: "2.3rem" }}>
-                        {remainingTime}
-                    </h1>
-                </div> */}
             </Grid>
 
             {/* أزرار اللغة والوضع */}

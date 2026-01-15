@@ -1,13 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import moment from "moment";
-import "moment/dist/locale/ar-dz";
+import dayjs from "dayjs";
+import "dayjs/locale/ar";
 
 // تحويل الوقت إلى دقائق
 const timeToMinutes = (time) => {
-    const [hours, minutes] = time.split(':').map(Number);
+    const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
 };
+
+// تحويل الأرقام إلى عربية
+const toArabicDigits = (str) =>
+    str.replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
 
 // Hook لجلب أوقات الصلاة
 export const usePrayerTimings = (selectedCity, t) => {
@@ -33,8 +37,8 @@ export const usePrayerTimings = (selectedCity, t) => {
                     params: {
                         latitude: selectedCity.lat,
                         longitude: selectedCity.lng,
-                        method: 4
-                    }
+                        method: 4,
+                    },
                 }
             );
 
@@ -44,7 +48,7 @@ export const usePrayerTimings = (selectedCity, t) => {
                 Dhuhr: times.Dhuhr,
                 Asr: times.Asr,
                 Sunset: times.Maghrib,
-                Isha: times.Isha
+                Isha: times.Isha,
             });
         } catch (err) {
             setError(err.response?.data?.message || t("errorLoading"));
@@ -61,13 +65,13 @@ export const usePrayerTimings = (selectedCity, t) => {
 };
 
 // Hook للعد التنازلي
-export const useCountdown = (timings, prayersArray) => {
+export const useCountdown = (timings) => {
     const [nextPrayerIndex, setNextPrayerIndex] = useState(2);
     const [remainingTime, setRemainingTime] = useState("");
 
     const setupCountdownTimer = useCallback(() => {
-        const now = new Date();
-        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const now = dayjs();
+        const currentTime = now.hour() * 60 + now.minute();
 
         const prayerTimes = [
             { key: "Fajr", minutes: timeToMinutes(timings.Fajr) },
@@ -96,25 +100,19 @@ export const useCountdown = (timings, prayersArray) => {
 
         const hours = Math.floor(timeDiff / 60);
         const minutes = timeDiff % 60;
-        const seconds = (60 - now.getSeconds()) % 60;
-
-        // setRemainingTime(
-        //     `${hours.toString().padStart(2, "0")} : ${minutes.toString().padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`
-        // );
+        const seconds = (60 - now.second()) % 60;
 
         setRemainingTime(
             `${hours.toString().padStart(2, "0")} : 
-                ${minutes.toString().padStart(2, "0")} : 
-                ${seconds.toString().padStart(2, "0")}`
+             ${minutes.toString().padStart(2, "0")} : 
+             ${seconds.toString().padStart(2, "0")}`
         );
-
     }, [timings]);
 
     useEffect(() => {
         if (!timings) return;
 
-        setupCountdownTimer(); // ← تنفيذ فوري بدون انتظار
-
+        setupCountdownTimer();
         const interval = setInterval(setupCountdownTimer, 1000);
         return () => clearInterval(interval);
     }, [setupCountdownTimer]);
@@ -122,32 +120,35 @@ export const useCountdown = (timings, prayersArray) => {
     return { nextPrayerIndex, remainingTime };
 };
 
-// Hook للتاريخ والوقت
+// Hook للتاريخ والوقت (معدل)
 export const useDateTime = (language) => {
     const [today, setToday] = useState("");
 
     useEffect(() => {
-        moment.locale(language);
+        dayjs.locale(language === "ar" ? "ar" : "en");
 
         const updateDate = () => {
-            const now = new Date();
-            setToday(
-                now.toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                }) +
-                " | " +
-                now.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })
-            );
+            const now = dayjs();
+
+            if (language === "ar") {
+                const datePart = now.format("dddd، D MMMM YYYY");
+                const timePart = now.format("hh:mm");
+                const meridiem = now.format("A")
+                    .replace("AM", "ص")
+                    .replace("PM", "م");
+
+                setToday(
+                    `${toArabicDigits(datePart)} | ${toArabicDigits(timePart)} ${meridiem}`
+                );
+            } else {
+                setToday(
+                    now.format("dddd, D MMMM YYYY | HH:mm")
+                );
+            }
         };
 
         updateDate();
-        const interval = setInterval(updateDate, 60000); // تحديث كل دقيقة
+        const interval = setInterval(updateDate, 60000);
 
         return () => clearInterval(interval);
     }, [language]);

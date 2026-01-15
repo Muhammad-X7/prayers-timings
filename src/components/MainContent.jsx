@@ -36,7 +36,29 @@ export default function MainContent({ darkMode, setDarkMode }) {
 		localStorage.setItem("language", language);
 	}, [language]);
 
-	const [selectedCity, setSelectedCity] = useState(defaultCity);
+	// المدينة مع التخزين في localStorage
+	const [selectedCity, setSelectedCity] = useState(() => {
+		const savedCity = localStorage.getItem("selectedCity");
+		if (savedCity) {
+			try {
+				const parsedCity = JSON.parse(savedCity);
+				// التحقق من أن المدينة المحفوظة موجودة في القائمة
+				const cityExists = availableCities.find(
+					city => city.country === parsedCity.country &&
+						city.apiName === parsedCity.apiName
+				);
+				return cityExists || defaultCity;
+			} catch {
+				return defaultCity;
+			}
+		}
+		return defaultCity;
+	});
+
+	// حفظ المدينة المختارة في localStorage عند التغيير
+	useEffect(() => {
+		localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
+	}, [selectedCity]);
 
 	const t = useCallback(
 		(key) => translations[language]?.[key] ?? key,
