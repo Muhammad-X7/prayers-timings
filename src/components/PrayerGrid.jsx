@@ -5,6 +5,14 @@ import Prayer from "./Prayer";
 import { memo } from "react";
 
 const PrayerGrid = memo(({ prayersArray, timings, language, darkMode }) => {
+    const safeTimings = timings || {
+        Fajr: "00:00",
+        Dhuhr: "00:00",
+        Asr: "00:00",
+        Sunset: "00:00",
+        Isha: "00:00",
+    };
+
     const isLargeScreen = useMediaQuery("(min-width:900px)");
 
     return (
@@ -13,7 +21,7 @@ const PrayerGrid = memo(({ prayersArray, timings, language, darkMode }) => {
                 <Grid key={prayer.key} xs={12} sm={6} md={4} lg={2.4}>
                     <Prayer
                         name={prayer.displayName[language]}
-                        time={timings[prayer.key]}
+                        time={safeTimings[prayer.key]}
                         image={prayer.key}
                         darkMode={darkMode}
                         isPriority={isLargeScreen || index === 0}

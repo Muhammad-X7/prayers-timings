@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo } from "react";
 
 import Header from "./Header";
 import ErrorAlert from "./ErrorAlert";
 import PrayerGrid from "./PrayerGrid";
 import CitySelector from "./CitySelector";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import {
 	translations,
@@ -27,59 +27,52 @@ MainContent.propTypes = {
 };
 
 export default function MainContent({ darkMode, setDarkMode }) {
-	// اللغة مع التخزين في localStorage
-	const [language, setLanguage] = useState(() => {
-		return localStorage.getItem("language") || "ar";
-	});
+	// اللغة مخزنة في localStorage
+	const [language, setLanguage] = useLocalStorage("language", "ar");
 
-	useEffect(() => {
-		localStorage.setItem("language", language);
-	}, [language]);
+	// المدينة مختارة مخزنة في localStorage
+	const [selectedCity, setSelectedCity] = useLocalStorage(
+		"selectedCity",
+		defaultCity
+	);
 
-	// المدينة مع التخزين في localStorage
-	const [selectedCity, setSelectedCity] = useState(() => {
-		const savedCity = localStorage.getItem("selectedCity");
-		if (savedCity) {
-			try {
-				const parsedCity = JSON.parse(savedCity);
-				// التحقق من أن المدينة المحفوظة موجودة في القائمة
-				const cityExists = availableCities.find(
-					city => city.country === parsedCity.country &&
-						city.apiName === parsedCity.apiName
-				);
-				return cityExists || defaultCity;
-			} catch {
-				return defaultCity;
-			}
-		}
-		return defaultCity;
-	});
-
-	// حفظ المدينة المختارة في localStorage عند التغيير
-	useEffect(() => {
-		localStorage.setItem("selectedCity", JSON.stringify(selectedCity));
+	// نسخة آمنة من المدينة للتحقق من صحتها
+	const safeCity = useMemo(() => {
+		const exists = availableCities.find(
+			c =>
+				c.country === selectedCity?.country &&
+				c.apiName === selectedCity?.apiName
+		);
+		return exists || defaultCity;
 	}, [selectedCity]);
 
+	// دالة ترجمة
 	const t = useCallback(
 		(key) => translations[language]?.[key] ?? key,
 		[language]
 	);
 
-	const { timings, loading, error, refetch } = usePrayerTimings(selectedCity, t);
+	// Hooks الرئيسية
+	const { timings, loading, error, refetch } = usePrayerTimings(safeCity, t);
 	const { nextPrayerIndex, remainingTime } = useCountdown(timings, prayersArray);
 	const today = useDateTime(language);
 
+	// تغيير المدينة
 	const handleCityChange = useCallback((event) => {
-		const [country, apiName] = event.target.value.split('-');
-		const cityObject = availableCities.find((city) => city.country === country && city.apiName === apiName);
+		const [country, apiName] = event.target.value.split("-");
+		const cityObject = availableCities.find(
+			city => city.country === country && city.apiName === apiName
+		);
 		setSelectedCity(cityObject);
-	}, []);
+	}, [setSelectedCity]);
 
+	// تغيير اللغة
 	const toggleLanguage = () => setLanguage(prev => (prev === "ar" ? "en" : "ar"));
 
-	// DarkMode toggle فقط يغير القيمة في App.jsx
+	// تبديل الوضع الليلي فقط في App.jsx
 	const toggleDarkMode = () => setDarkMode(prev => !prev);
 
+	// ستايل الحاوية حسب اللغة والوضع
 	const containerStyle = useMemo(() => ({
 		direction: language === "ar" ? "rtl" : "ltr",
 		backgroundColor: darkMode ? "#1f1f1fff" : "#e9e9e9ff",
@@ -90,11 +83,17 @@ export default function MainContent({ darkMode, setDarkMode }) {
 
 	return (
 		<div style={containerStyle}>
-			<ErrorAlert error={error} darkMode={darkMode} loading={loading} onRetry={refetch} t={t} />
+			<ErrorAlert
+				error={error}
+				darkMode={darkMode}
+				loading={loading}
+				onRetry={refetch}
+				t={t}
+			/>
 
 			<Header
 				today={today}
-				cityName={selectedCity.displayName[language]}
+				cityName={safeCity.displayName[language]}
 				loading={loading}
 				remainingUntil={t("remainingUntil")}
 				nextPrayerName={prayersArray[nextPrayerIndex].displayName[language]}
@@ -106,21 +105,30 @@ export default function MainContent({ darkMode, setDarkMode }) {
 				t={t}
 			/>
 
-			<Divider style={{ borderColor: darkMode ? "white" : "#242424", opacity: "0.1", margin: "16px 0" }} />
+			<Divider
+				style={{
+					borderColor: darkMode ? "white" : "#242424",
+					opacity: "0.1",
+					margin: "16px 0"
+				}}
+			/>
 
-			<PrayerGrid prayersArray={prayersArray} timings={timings} language={language} darkMode={darkMode} />
+			<PrayerGrid
+				prayersArray={prayersArray}
+				timings={timings}
+				language={language}
+				darkMode={darkMode}
+			/>
 
-			<Stack direction="row" justifyContent="center" style={{ marginTop: "20px" }}>
-				<CitySelector
-					selectedCity={selectedCity}
-					handleCityChange={handleCityChange}
-					availableCities={availableCities}
-					language={language}
-					darkMode={darkMode}
-					loading={loading}
-					t={t}
-				/>
-			</Stack>
+			<CitySelector
+				selectedCity={safeCity}
+				handleCityChange={handleCityChange}
+				availableCities={availableCities}
+				language={language}
+				darkMode={darkMode}
+				loading={loading}
+				t={t}
+			/>
 		</div>
 	);
 }
