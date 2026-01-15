@@ -35,8 +35,17 @@
   }
 
   .city {
-    /* margin: 15px 0 0px; */
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width:750px) {
+  .today {
+    font-size: 1rem;
+  }
+
+  .city {
+    font-size: 1.15rem;
   }
 }
 
@@ -78,7 +87,16 @@
 
   .remaining-time {
     font-size: 1.55rem;
-    /* margin: 15px 0 0px; */
+  }
+}
+
+@media (max-width:750px) {
+  .remaining-until {
+    font-size: 1rem;
+  }
+
+  .remaining-time {
+    font-size: 1.2rem;
   }
 
 }
